@@ -1,0 +1,1 @@
+Contains scripts used to run centralized IP/SQP methods used as baseline in the paper.
