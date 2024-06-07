@@ -1,0 +1,1 @@
+Contains pythons script used to simulate neural network, uniform and greedy allocation. Also plots results obtained from running Matlab scripts.
