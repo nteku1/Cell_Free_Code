@@ -1,0 +1,5 @@
+Code used for generating datasets for CFN setups.
+
+Modified from paper "Making Cell-Free MIMO Competitive With MMSE Processing and Centralized Implementation"
+
+https://github.com/emilbjornson/competitive-cell-free/tree/master
