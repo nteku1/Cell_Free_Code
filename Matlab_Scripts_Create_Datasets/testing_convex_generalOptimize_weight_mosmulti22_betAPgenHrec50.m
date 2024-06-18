@@ -1,0 +1,364 @@
+clear all;
+
+
+%% Define simulation setup
+%processing capabilities
+B = 20*10^6; %bandwidth
+f =  1*10^6;
+C = 20;
+%%%D = 10*10^6;
+S_u= 1*10^6;
+
+%Number of Monte Carlo setups
+nbrOfSetups = 4;%3 30;
+aaaaaa = 0;
+outputs = zeros(1,nbrOfSetups);
+indices = zeros(1,nbrOfSetups);
+%Number of channel realizations per setup
+nbrOfRealizations = 1; %1000;
+%Number of APs in the cell-free network
+L = 50;%25;%25;%20;%20;%10; %original: 10
+
+%Number of UEs
+%K = 2;
+%K = 3;
+K = 6;
+
+%Number of antennas per AP
+N = 1;
+
+%Length of the coherence block
+tau_c = 200;
+
+%Number of pilots per coherence block
+tau_p = 20;
+
+%Uplink transmit power per UE (mW)
+p = 100;
+
+%power ratio
+ada_1 = 1;
+beta1 = 10;
+beta2 = 1;%0.5;
+% beta3 = 10^3;
+% beta4 = 10^7;
+% beta5 = 10^7;
+% beta3 = 10^3;
+% beta4 = 10^7;
+
+fileID3 = fopen('gggetready_faaaaa1_29_50APs_singlepathloss.txt','w');
+fileID4 = fopen('ggggetready_faaaaa1_29_50APs_singlepathloss_p2.txt','w');
+
+% % fileID3 = fopen('best_vvvver1_endfortoday__1_29_20APs_Single_Path_loss.txt','w');
+% % fileID4 = fopen('best_vvvver1_endfortoday__1_29_20APs_Single_Path_loss_p2.txt','w');
+% fileID3 = fopen('LASTTTTTTTT____20single.txt','w');
+% fileID4 = fopen('LASTTTTTTT___20single_p2.txt','w');
+% % % % fileID3 = fopen('vvvvvvvvvvvv100m_single_path_loss_25AP_12_13.txt','w');
+% % % % fileID4 = fopen('vvvvvvvvvvvv100m_single_path_loss_25AP_12_13_p2.txt','w');
+% % % fileID3 = fopen('llllLAST_pplease_newwww____ccccbbbbbACTUAL_v20_700m_25AP_6_UE_single_worse_path_loss_12_12_23.txt','w');
+% % % fileID4 = fopen('llllLAST_pplease_newwww____ccccbbbbbACTUAL_v20_700m_25AP_6_UE_single_worse_path_loss_12_12_23_p2.txt','w');
+% % % fileID3 = fopen('llLAST_pplease_newwww____ccccbbbbbACTUAL_v25_700m_25AP_6_UE_single_worse_path_loss_12_12_23.txt','w');
+% % % fileID4 = fopen('llLAST_pplease_newwww____ccccbbbbbACTUAL_v25_700m_25AP_6_UE_single_worse_path_loss_12_12_23_p2.txt','w');
+% % % % % fileID3 = fopen('fvvvvvvfffver111115_LAST_CORRECT_fffffFINAL_ver15_LATEST_100m_test_threeslope_25APs_6UEs_11_23_23.txt','w');
+% % % % % fileID4 = fopen('vvvvffffver111115_LAST_CORRECT_fffffFINAL_ver15_LATEST_100m_test_threeslope_25APs_6UEs_11_23_23_p2.txt','w');
+% fileID3 = fopen('STOP_bbPLS_vREDO_bbvMOO_PLS_STOP_VER819_NOMOvACTUAL_LARGE_BPL3_1000m_VER15_25AP_6UE_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_50000_7_28_ExtendingTesting_ver62.txt','w');
+% fileID4 = fopen('STOP_bbPLS_vREDO_bbvMOO_PLS_STOP_VER819_NOMOvACTUAL_LARGE_BPL3_1000m_VER15_25AP_6UE_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_part2_7_28_ExtendingTesting_ver62.txt','w');
+% % % fileID3 = fopen('BPL3_1000m_VER15_20AP_6UE_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_50000_7_28_ExtendingTesting_ver62.txt','w');
+% % % fileID4 = fopen('BPL3_1000m_VER15_20AP_6UE_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_part2_7_28_ExtendingTesting_ver62.txt','w');
+
+% fileID3 = fopen('VER1_10AP_3UE_NO_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_50000_7_28_ExtendingTesting_ver62.txt','w');
+% fileID4 = fopen('VER1_10AP_3UE_NO_SHAD_Hmat_scenario3_10APs_Multi_2_users_FUNFINALACTUREG_complex_part2_7_28_ExtendingTesting_ver62.txt','w');
+
+% fileID3 = fopen('VER3_RRRREDO_SHADDD_Hmat_scenario3_10APs_Multi_3_users_FUNFINALACTUREG_complex_50000_7_28_ExtendingTesting_ver62.txt','w');
+% fileID4 = fopen('VER3_RRRREDO_SHADDD_Hmat_scenario3_10APs_Multi_3_users_FUNFINALACTUREG_complex_part2_7_28_ExtendingTesting_ver62.txt','w');
+% fileID2 = fopen('alphasssnew.txt','w');
+%log2(1+((p*ada_1*alphasss^2*abs(H_AP).^2)/(1+p*ada_1*((1-alphasss)^2)*abs(H_AP)^2)))
+for iiii = 1:101000%210000
+    if iiii == 1 %initialize both user and AP positions
+        [gainOverNoisedB,R,pilotIndexCF,pilotIndexSC,APpositions,UEpositions] = generateSetup_threeslope_rev_rec_100me(L,K,N,tau_p,1,p);
+    else
+         [gainOverNoisedB,R,pilotIndexCF,pilotIndexSC] = generateSetup_threeslope_rev_justuserpos_change22_100me(L,K,N,tau_p,1,p,APpositions,UEpositions); 
+    end
+        betaVal = db2pow(gainOverNoisedB);
+   [Hhat_AP,H_AP,B_AP] = functionChannelEstimates(R,nbrOfRealizations,L,K,N,tau_p,pilotIndexCF,p);
+%     for n = 1:nbrOfSetups
+%         SINR = 1:0.11*n:n+1;
+%         indices(n) = max(SINR)-min(SINR);
+%         D = 1 *10^6;
+% 
+% %        [gainOverNoisedB,R,pilotIndexCF,pilotIndexSC] = generateSetup_threeslope(L,K,N,tau_p,1,p);
+% %         betaVal = db2pow(gainOverNoisedB);
+% 
+% 
+%         %Full transmit power case
+% 
+%         %Generate channel realizations, channel estimates, and estimation
+%         %error correlation matrices for all UEs to the APs 
+% %         [Hhat_AP,H_AP,B_AP] = functionChannelEstimates(R,nbrOfRealizations,L,K,N,tau_p,pilotIndexCF,p);
+%         %old
+%         %fun = @(alphasss) max(((alphasss*D*C)/f) + ((alphasss*S_u)/(B*log2(1+((p*ada_1*alphasss.^2*abs(H_AP).^2)/(1+p*ada_1*((1-alphasss).^2)*abs(H_AP).^2))))));
+%         %initial condition
+%        
+% %         fun = @(alphasss) ((p*ada_1*alphasss.^2*abs(H_AP).^2))/(1+p*ada_1*((1-alphasss).^2)*abs(H_AP).^2);
+% %         fun = @(alphasss) sum(((log2(1+((p*ada_1*alphasss.^2*abs(H_AP).^2)/(1+p*ada_1*((1-alphasss).^2)*abs(H_AP).^2))))));
+%        %max
+%         
+%          %added latency of sending H_AP - may need to revise rate for this?
+%          
+%          %Hhat_AP + sending fragement from AP to central AP + sending
+%          %alphas!!!
+%          %(beta3*(sum(alphasss.*D)/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.'))))))) 
+% %            fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + (beta4*(((L-1)*(length(H_AP)+length(alphasss)))/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))))  +   (beta5*(((L-1)*(length(alphasss)))/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.'))))))) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))));    
+%           fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))));    
+%                   
+% 
+% 
+% %          fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + (beta3*((alphasss.*(L-1)*D)/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(Hhat_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(Hhat_AP).^2.')))))))  + (beta4*(((L-1)*(length(Hhat_AP)+length(alphasss)))/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(Hhat_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(Hhat_AP).^2.'))))))) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(Hhat_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(Hhat_AP).^2.')))))));
+%          
+%          
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+%          %Replace H_AP with Hhat_AP
+% %                            fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + (((L-1)*length(Hhat_AP))/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(Hhat_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(Hhat_AP).^2.')))))) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(Hhat_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(Hhat_AP).^2.')))))));
+%          
+%          %Replace Length(H_AP) with product of dimensions of H_AP or * 2?
+% %                   fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + (((L-1)*length(H_AP))/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))));
+%          
+%           %added latency of AP to AP sending decoded fragments
+% %          fun = @(alphasss) max((beta1*((alphasss.*D*C)/f)) + ((alphasss.*(L-1)*D)/sum((B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))) + (beta2*((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.')))))));
+%          
+%          
+% % % % % %         fun = @(alphasss) max(((alphasss.*D*C)/f) + ((alphasss*S_u)./(B*log2(1+((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.'))))));
+% % % % % %         fun = @(alphasss) max(((alphasss.*D*C)/f) + ((alphasss*S_u)./(B*log2(1+SINR)))); 
+%         if n == 1
+%         alphasss_0= rand(1,L);
+%         alphasss_0= alphasss_0/sum(alphasss_0);
+%         outputs(n) = outputs(n) + fun(alphasss_0);
+% 
+%         else
+%         alphasss_0 = alphasss;
+%         end
+% 
+%         lb = zeros(1,L);%0;
+%         ub = ones(1,L);%;1;
+%         Aeq = ones(1,L);
+%         beq = 1;
+%         A = [];
+%         b = [];
+% 
+%         if n > 1
+%             outputs(n) = outputs(n) + fun(alphasss);
+%         end
+% % % %        alphasss = fmincon(fun,alphasss_0,A,b,Aeq,beq,lb,ub);
+% % % %        %'MaxFunEvals',4500,'TolCon', 1e-10'  6500
+% 
+% 
+%       options = optimoptions(@fmincon,'MaxFunEvals',4500,'StepTolerance',1e-15,'TolCon',1e-10);%'MaxIter',2000,'TolCon',1e-10); %2000 TolCon 1e-10 TolX
+%        alphasss = fmincon(fun,alphasss_0,A,b,Aeq,beq,lb,ub,[],options);
+%  
+% 
+%         d= 1;
+%         
+%        
+% 
+% 
+%     end
+%     
+     %%%%New Stuff put Hhat or no
+
+     
+%      SINRssss = ((p*ada_1*alphasss.^2.*abs(H_AP).^2.')./(1+p*ada_1*((1-alphasss).^2).*abs(H_AP).^2.'));
+%         [IIIIIII,BBBBBBB1] = sort(SINRssss,'ascend');
+%         [IIIIIII2,BBBBBBB2] = sort(alphasss,'ascend');
+%         
+%         if any(BBBBBBB1 ~= BBBBBBB2)
+%             aaaaaa = aaaaaa + 1;
+%         end
+%         fprintf(fileID,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',SINRssss(1),...
+%             SINRssss(2),SINRssss(3),SINRssss(4),SINRssss(5),SINRssss(6),SINRssss(7),...
+%             SINRssss(8),SINRssss(9),SINRssss(10));
+%         
+%          fprintf(fileID2,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',alphasss(1),...
+%             alphasss(2),alphasss(3),alphasss(4),alphasss(5),alphasss(6),alphasss(7),...
+%             alphasss(8),alphasss(9),alphasss(10));
+%     
+    
+if iiii <= 100000% 1000
+% fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%          real(H_AP(1)), imag(H_AP(1)),real(H_AP(2)),imag(H_AP(2)),real(H_AP(3)), imag(H_AP(3)),real(H_AP(4)), imag(H_AP(4)),real(H_AP(5)), imag(H_AP(5)));%,real(H_AP(6)), imag(H_AP(6)),real(H_AP(7)), imag(H_AP(7)));    
+
+% % % % fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+% % % %           real(H_AP(1)), imag(H_AP(1)),real(H_AP(2)),imag(H_AP(2)),real(H_AP(3)), imag(H_AP(3)),...
+% % % %           real(H_AP(4)), imag(H_AP(4)),real(H_AP(5)),imag(H_AP(5)),real(H_AP(6)), imag(H_AP(6)),...
+% % % %           real(H_AP(7)), imag(H_AP(7)),real(H_AP(8)),imag(H_AP(8)),real(H_AP(9)), imag(H_AP(9)),...
+% % % %           real(H_AP(10)), imag(H_AP(10)));
+
+for jlock = 1:K
+% fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+%           real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)),real(H_AP(6,jlock)), imag(H_AP(6,jlock)),...
+%           real(H_AP(7,jlock)), imag(H_AP(7,jlock)),real(H_AP(8,jlock)),imag(H_AP(8,jlock)),real(H_AP(9,jlock)), imag(H_AP(9,jlock)),...
+%           real(H_AP(10,jlock)), imag(H_AP(10,jlock)));
+
+ % 15 APs
+%  fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%   real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+%   real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)),real(H_AP(6,jlock)), imag(H_AP(6,jlock)),...
+%   real(H_AP(7,jlock)), imag(H_AP(7,jlock)),real(H_AP(8,jlock)),imag(H_AP(8,jlock)),real(H_AP(9,jlock)), imag(H_AP(9,jlock)),...
+%   real(H_AP(10,jlock)), imag(H_AP(10,jlock)),real(H_AP(11,jlock)), imag(H_AP(11,jlock)),real(H_AP(12,jlock)), imag(H_AP(12,jlock)),...
+%   real(H_AP(13,jlock)), imag(H_AP(13,jlock)),real(H_AP(14,jlock)), imag(H_AP(14,jlock)),real(H_AP(15,jlock)), imag(H_AP(15,jlock)));  
+%      
+%       
+      
+% % % %       
+% fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%   real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+%   real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)),real(H_AP(6,jlock)), imag(H_AP(6,jlock)),...
+%   real(H_AP(7,jlock)), imag(H_AP(7,jlock)),real(H_AP(8,jlock)),imag(H_AP(8,jlock)),real(H_AP(9,jlock)), imag(H_AP(9,jlock)),...
+%   real(H_AP(10,jlock)), imag(H_AP(10,jlock)),real(H_AP(11,jlock)), imag(H_AP(11,jlock)),real(H_AP(12,jlock)), imag(H_AP(12,jlock)),...
+%   real(H_AP(13,jlock)), imag(H_AP(13,jlock)),real(H_AP(14,jlock)), imag(H_AP(14,jlock)),real(H_AP(15,jlock)), imag(H_AP(15,jlock)),...
+%   real(H_AP(16,jlock)), imag(H_AP(16,jlock)),real(H_AP(17,jlock)), imag(H_AP(17,jlock)),real(H_AP(18,jlock)), imag(H_AP(18,jlock)),...
+%   real(H_AP(19,jlock)), imag(H_AP(19,jlock)),real(H_AP(20,jlock)), imag(H_AP(20,jlock)));  
+
+
+% fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%   real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+%   real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)),real(H_AP(6,jlock)), imag(H_AP(6,jlock)),...
+%   real(H_AP(7,jlock)), imag(H_AP(7,jlock)),real(H_AP(8,jlock)),imag(H_AP(8,jlock)),real(H_AP(9,jlock)), imag(H_AP(9,jlock)),...
+%   real(H_AP(10,jlock)), imag(H_AP(10,jlock)),real(H_AP(11,jlock)), imag(H_AP(11,jlock)),real(H_AP(12,jlock)), imag(H_AP(12,jlock)),...
+%   real(H_AP(13,jlock)), imag(H_AP(13,jlock)),real(H_AP(14,jlock)), imag(H_AP(14,jlock)),real(H_AP(15,jlock)), imag(H_AP(15,jlock)),...
+%   real(H_AP(16,jlock)), imag(H_AP(16,jlock)),real(H_AP(17,jlock)), imag(H_AP(17,jlock)),real(H_AP(18,jlock)), imag(H_AP(18,jlock)),...
+%   real(H_AP(19,jlock)), imag(H_AP(19,jlock)),real(H_AP(20,jlock)), imag(H_AP(20,jlock)),real(H_AP(21,jlock)), imag(H_AP(21,jlock)),... 
+%   real(H_AP(22,jlock)), imag(H_AP(22,jlock)),real(H_AP(23,jlock)), imag(H_AP(23,jlock)),real(H_AP(24,jlock)), imag(H_AP(24,jlock)),...
+%   real(H_AP(25,jlock)), imag(H_AP(25,jlock)));  
+
+%50 APs
+fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+  real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+  real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)),real(H_AP(6,jlock)), imag(H_AP(6,jlock)),...
+  real(H_AP(7,jlock)), imag(H_AP(7,jlock)),real(H_AP(8,jlock)),imag(H_AP(8,jlock)),real(H_AP(9,jlock)), imag(H_AP(9,jlock)),...
+  real(H_AP(10,jlock)), imag(H_AP(10,jlock)),real(H_AP(11,jlock)), imag(H_AP(11,jlock)),real(H_AP(12,jlock)), imag(H_AP(12,jlock)),...
+  real(H_AP(13,jlock)), imag(H_AP(13,jlock)),real(H_AP(14,jlock)), imag(H_AP(14,jlock)),real(H_AP(15,jlock)), imag(H_AP(15,jlock)),...
+  real(H_AP(16,jlock)), imag(H_AP(16,jlock)),real(H_AP(17,jlock)), imag(H_AP(17,jlock)),real(H_AP(18,jlock)), imag(H_AP(18,jlock)),...
+  real(H_AP(19,jlock)), imag(H_AP(19,jlock)),real(H_AP(20,jlock)), imag(H_AP(20,jlock)),real(H_AP(21,jlock)), imag(H_AP(21,jlock)),... 
+  real(H_AP(22,jlock)), imag(H_AP(22,jlock)),real(H_AP(23,jlock)), imag(H_AP(23,jlock)),real(H_AP(24,jlock)), imag(H_AP(24,jlock)),...
+  real(H_AP(25,jlock)), imag(H_AP(25,jlock)),real(H_AP(26,jlock)), imag(H_AP(26,jlock)),real(H_AP(27,jlock)), imag(H_AP(27,jlock)),...
+  real(H_AP(28,jlock)), imag(H_AP(28,jlock)),real(H_AP(29,jlock)), imag(H_AP(29,jlock)),real(H_AP(30,jlock)), imag(H_AP(30,jlock)),...
+  real(H_AP(31,jlock)), imag(H_AP(31,jlock)),real(H_AP(32,jlock)), imag(H_AP(32,jlock)),real(H_AP(33,jlock)), imag(H_AP(33,jlock)),...
+  real(H_AP(34,jlock)), imag(H_AP(34,jlock)),real(H_AP(35,jlock)), imag(H_AP(35,jlock)),real(H_AP(36,jlock)), imag(H_AP(36,jlock)),...
+  real(H_AP(37,jlock)), imag(H_AP(37,jlock)),real(H_AP(38,jlock)), imag(H_AP(38,jlock)),real(H_AP(39,jlock)), imag(H_AP(39,jlock)),...
+  real(H_AP(40,jlock)), imag(H_AP(40,jlock)),real(H_AP(41,jlock)), imag(H_AP(41,jlock)),real(H_AP(42,jlock)), imag(H_AP(42,jlock)),...
+  real(H_AP(43,jlock)), imag(H_AP(43,jlock)),real(H_AP(44,jlock)), imag(H_AP(44,jlock)),real(H_AP(45,jlock)), imag(H_AP(45,jlock)),...
+  real(H_AP(46,jlock)), imag(H_AP(46,jlock)),real(H_AP(47,jlock)), imag(H_AP(47,jlock)),real(H_AP(48,jlock)), imag(H_AP(48,jlock)),...
+  real(H_AP(49,jlock)), imag(H_AP(49,jlock)),real(H_AP(50,jlock)), imag(H_AP(50,jlock)));  
+
+
+%5 APs
+% fprintf(fileID3,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%   real(H_AP(1,jlock)), imag(H_AP(1,jlock)),real(H_AP(2,jlock)),imag(H_AP(2,jlock)),real(H_AP(3,jlock)), imag(H_AP(3,jlock)),...
+%   real(H_AP(4,jlock)), imag(H_AP(4,jlock)),real(H_AP(5,jlock)),imag(H_AP(5,jlock)));  
+end
+      
+      
+else
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%          real(H_AP(1)), imag(H_AP(1)),real(H_AP(2)),imag(H_AP(2)),real(H_AP(3)), imag(H_AP(3)),real(H_AP(4)), imag(H_AP(4)),real(H_AP(5)), imag(H_AP(5)));%,real(H_AP(6)), imag(H_AP(6)),real(H_AP(7)), imag(H_AP(7)));  
+
+% % % % % % % % fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+% % % % % % % %           real(H_AP(1)), imag(H_AP(1)),real(H_AP(2)),imag(H_AP(2)),real(H_AP(3)), imag(H_AP(3)),...
+% % % % % % % %           real(H_AP(4)), imag(H_AP(4)),real(H_AP(5)),imag(H_AP(5)),real(H_AP(6)), imag(H_AP(6)),...
+% % % % % % % %           real(H_AP(7)), imag(H_AP(7)),real(H_AP(8)),imag(H_AP(8)),real(H_AP(9)), imag(H_AP(9)),...
+% % % % % % % %           real(H_AP(10)), imag(H_AP(10)));
+
+
+for block = 1:K
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+%           real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)),real(H_AP(6,block)), imag(H_AP(6,block)),...
+%           real(H_AP(7,block)), imag(H_AP(7,block)),real(H_AP(8,block)),imag(H_AP(8,block)),real(H_AP(9,block)), imag(H_AP(9,block)),...
+%           real(H_AP(10,block)), imag(H_AP(10,block)));
+%    
+
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+%           real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)),real(H_AP(6,block)), imag(H_AP(6,block)),...
+%           real(H_AP(7,block)), imag(H_AP(7,block)),real(H_AP(8,block)),imag(H_AP(8,block)),real(H_AP(9,block)), imag(H_AP(9,block)),...
+%           real(H_AP(10,block)), imag(H_AP(10,block)),real(H_AP(11,jlock)), imag(H_AP(11,jlock)),real(H_AP(12,jlock)), imag(H_AP(12,jlock)),...
+%           real(H_AP(13,jlock)), imag(H_AP(13,jlock)),real(H_AP(14,jlock)), imag(H_AP(14,jlock)),real(H_AP(15,jlock)), imag(H_AP(15,jlock)));     
+%       
+%       
+      
+      
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+%           real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)),real(H_AP(6,block)), imag(H_AP(6,block)),...
+%           real(H_AP(7,block)), imag(H_AP(7,block)),real(H_AP(8,block)),imag(H_AP(8,block)),real(H_AP(9,block)), imag(H_AP(9,block)),...
+%           real(H_AP(10,block)), imag(H_AP(10,block)),real(H_AP(11,block)), imag(H_AP(11,block)),real(H_AP(12,block)), imag(H_AP(12,block)),...
+%           real(H_AP(13,block)), imag(H_AP(13,block)),real(H_AP(14,block)), imag(H_AP(14,block)),real(H_AP(15,block)), imag(H_AP(15,block)),...
+%           real(H_AP(16,block)), imag(H_AP(16,block)),real(H_AP(17,block)), imag(H_AP(17,block)),real(H_AP(18,block)), imag(H_AP(18,block)),...
+%           real(H_AP(19,block)), imag(H_AP(19,block)),real(H_AP(20,block)), imag(H_AP(20,block)));     
+
+% 
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+%           real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)),real(H_AP(6,block)), imag(H_AP(6,block)),...
+%           real(H_AP(7,block)), imag(H_AP(7,block)),real(H_AP(8,block)),imag(H_AP(8,block)),real(H_AP(9,block)), imag(H_AP(9,block)),...
+%           real(H_AP(10,block)), imag(H_AP(10,block)),real(H_AP(11,block)), imag(H_AP(11,block)),real(H_AP(12,block)), imag(H_AP(12,block)),...
+%           real(H_AP(13,block)), imag(H_AP(13,block)),real(H_AP(14,block)), imag(H_AP(14,block)),real(H_AP(15,block)), imag(H_AP(15,block)),...
+%           real(H_AP(16,block)), imag(H_AP(16,block)),real(H_AP(17,block)), imag(H_AP(17,block)),real(H_AP(18,block)), imag(H_AP(18,block)),...
+%           real(H_AP(19,block)), imag(H_AP(19,block)),real(H_AP(20,block)), imag(H_AP(20,block)),real(H_AP(21,block)), imag(H_AP(21,block)),... 
+%           real(H_AP(22,block)), imag(H_AP(22,block)),real(H_AP(23,block)), imag(H_AP(23,block)),real(H_AP(24,block)), imag(H_AP(24,block)),...
+%           real(H_AP(25,block)), imag(H_AP(25,block)));     
+
+%50 APs
+fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+          real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+          real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)),real(H_AP(6,block)), imag(H_AP(6,block)),...
+          real(H_AP(7,block)), imag(H_AP(7,block)),real(H_AP(8,block)),imag(H_AP(8,block)),real(H_AP(9,block)), imag(H_AP(9,block)),...
+          real(H_AP(10,block)), imag(H_AP(10,block)),real(H_AP(11,block)), imag(H_AP(11,block)),real(H_AP(12,block)), imag(H_AP(12,block)),...
+          real(H_AP(13,block)), imag(H_AP(13,block)),real(H_AP(14,block)), imag(H_AP(14,block)),real(H_AP(15,block)), imag(H_AP(15,block)),...
+          real(H_AP(16,block)), imag(H_AP(16,block)),real(H_AP(17,block)), imag(H_AP(17,block)),real(H_AP(18,block)), imag(H_AP(18,block)),...
+          real(H_AP(19,block)), imag(H_AP(19,block)),real(H_AP(20,block)), imag(H_AP(20,block)),real(H_AP(21,block)), imag(H_AP(21,block)),... 
+          real(H_AP(22,block)), imag(H_AP(22,block)),real(H_AP(23,block)), imag(H_AP(23,block)),real(H_AP(24,block)), imag(H_AP(24,block)),...
+          real(H_AP(25,block)), imag(H_AP(25,block)),real(H_AP(26,block)), imag(H_AP(26,block)),real(H_AP(27,block)), imag(H_AP(27,block)),...
+          real(H_AP(28,block)), imag(H_AP(28,block)),real(H_AP(29,block)), imag(H_AP(29,block)),real(H_AP(30,block)), imag(H_AP(30,block)),...
+          real(H_AP(31,block)), imag(H_AP(31,block)),real(H_AP(32,block)), imag(H_AP(32,block)),real(H_AP(33,block)), imag(H_AP(33,block)),...
+          real(H_AP(34,block)), imag(H_AP(34,block)),real(H_AP(35,block)), imag(H_AP(35,block)),real(H_AP(36,block)), imag(H_AP(36,block)),...
+          real(H_AP(37,block)), imag(H_AP(37,block)),real(H_AP(38,block)), imag(H_AP(38,block)),real(H_AP(39,block)), imag(H_AP(39,block)),...
+          real(H_AP(40,block)), imag(H_AP(40,block)),real(H_AP(41,block)), imag(H_AP(41,block)),real(H_AP(42,block)), imag(H_AP(42,block)),...
+          real(H_AP(43,block)), imag(H_AP(43,block)),real(H_AP(44,block)), imag(H_AP(44,block)),real(H_AP(45,block)), imag(H_AP(45,block)),...
+          real(H_AP(46,block)), imag(H_AP(46,block)),real(H_AP(47,block)), imag(H_AP(47,block)),real(H_AP(48,block)), imag(H_AP(48,block)),...
+          real(H_AP(49,block)), imag(H_AP(49,block)),real(H_AP(50,block)), imag(H_AP(50,block)));  
+
+
+
+
+
+
+%5 APs
+% fprintf(fileID4,'%.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f %.5f\n',...
+%           real(H_AP(1,block)), imag(H_AP(1,block)),real(H_AP(2,block)),imag(H_AP(2,block)),real(H_AP(3,block)), imag(H_AP(3,block)),...
+%           real(H_AP(4,block)), imag(H_AP(4,block)),real(H_AP(5,block)),imag(H_AP(5,block)));      
+end
+
+
+
+end
+    
+end
+fclose(fileID3);
+fclose(fileID4);
+% outputs = outputs/iiii
+% plot(1:nbrOfSetups,outputs,'-bo');
+% xlabel('Timesteps');
+% ylabel('Max Latency');
+% title('Latency (\mu_1 = 100, \mu_2 = 1000 vs. Timesteps - Scenario 1: APs unchanged'); %\beta =-81.2 dB 3 w/ Shadow Fading
+% %title('Optimizing \alpha - Constant H'); \mu_3 = 10^3, \mu_4 = \mu_5 = 10^7) 
+% fclose(fileID);
+% fclose(fileID2);
