@@ -192,7 +192,8 @@ def update(
 
 
             #calculating vector of SINRs for current UE.
-            dpp = ((p) *  tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference) + ((p)*tens_other_interference)
+            dpp = (p *  (tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference)) + ((p)*tens_other_interference)
+            #dpp = ((p) *  tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference) + ((p)*tens_other_interference)
             tep = (((p) * (eta_train * chansd)))
 
 
