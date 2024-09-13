@@ -192,7 +192,8 @@ def update(
 
 
             #calculating vector of SINRs for current UE.
-            dpp = ((p) *  tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference) + ((p)*tens_other_interference)
+            dpp = (p *  (tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference)) + ((p)*tens_other_interference)
+            #dpp = ((p) *  tf.math.reduce_sum(tens_temp_interference) - tens_temp_interference) + ((p)*tens_other_interference)
             tep = (((p) * (eta_train * chansd)))
 
 
@@ -407,7 +408,7 @@ for ep in range(total_episodes):
 
 
         #Once training process reaches set timestep, stop training phase
-        if indexxx == 18000:#12000:#4200:#12000:
+        if indexxx == 8100:#18000:#12000:#4200:#12000:
             stop_now = 1
             break
 
