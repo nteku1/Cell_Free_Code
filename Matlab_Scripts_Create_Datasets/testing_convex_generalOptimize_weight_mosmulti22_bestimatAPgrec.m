@@ -2,6 +2,8 @@ clear all;
 
 
 %% Define simulation setup
+%% Leverages tools from Emil Björnson and Luca Sanguinetti, “Making Cell-Free Massive MIMO Competitive With MMSE Processing and Centralized Implementation,” IEEE Transactions on Wireless Communications, 
+%% vol. 19, no. 1, pp. 77-90, January 2020.
 %Number of channel realizations per setup
 nbrOfRealizations = 1; %1000;
 %Number of APs in the cell-free network
