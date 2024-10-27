@@ -74,7 +74,7 @@ for iiii = 1:6000
         lb = zeros(1,2*L*K)+ 0.001 * ones(1,2*L*K);%0;
         ub = ones(1,2*L*K);
         % Aeq = [[ones(1,L) zeros(1,K*L-L)];[zeros(1,L) ones(1,L) zeros(1,K*L-2*L)]; [zeros(1,2*L) ones(1,L) zeros(1,K*L-3*L)]; [zeros(1,3*L) ones(1,L) zeros(1,K*L-4*L)];  [zeros(1,4*L) ones(1,L) zeros(1,K*L-5*L)];[zeros(1,K*L-L) ones(1,L)]];
-        
+        %% Based on https://www.mathworks.com/matlabcentral/answers/454349-multiple-linear-equality-constraints-in-fmincon
                 Aeq = [[ones(1,L) zeros(1,2*K*L-L)];[zeros(1,L) ones(1,L) zeros(1,2*K*L-2*L)]; [zeros(1,2*L) ones(1,L) zeros(1,2*K*L-3*L)]; [zeros(1,3*L) ones(1,L) zeros(1,2*K*L-4*L)];  [zeros(1,4*L) ones(1,L) zeros(1,2*K*L-5*L)];,...
                     [zeros(1,5*L) ones(1,L) zeros(1,2*K*L-6*L)]; [zeros(1,6*L) ones(1,L) zeros(1,2*K*L-7*L)]; [zeros(1,7*L) ones(1,L) zeros(1,2*K*L-8*L)]; [zeros(1,8*L) ones(1,L) zeros(1,2*K*L-9*L)]; [zeros(1,9*L) ones(1,L) zeros(1,2*K*L-10*L)]; [zeros(1,10*L) ones(1,L) zeros(1,2*K*L-11*L)]; [zeros(1,2*K*L-L) ones(1,L)]];
         beq = ones(2*K,1);
