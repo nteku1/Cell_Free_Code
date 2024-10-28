@@ -256,6 +256,7 @@ def nn_init():
 
 
 #function for generating neural networks during testing
+# based on https://keras.io/examples/rl/ddpg_pendulum/
 def policy_testing(state):
     #Get alphas from raw neural network oput
     sampled_actions = tf.squeeze(cell_nn(state,training=False))
