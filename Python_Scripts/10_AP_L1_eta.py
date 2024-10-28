@@ -236,7 +236,7 @@ def update(
         #Setting Loss as attained latency
         critic_loss = final_lats
 
-    #Applying ADAM optimizer
+    #Applying ADAM optimizer based on https://keras.io/examples/rl/ddpg_pendulum/
     critic_grad = tape.gradient(critic_loss, cell_nn.trainable_variables)
     critic_optimizer.apply_gradients(
         zip(critic_grad, cell_nn.trainable_variables)
@@ -244,7 +244,7 @@ def update(
 
     return critic_value,critic_value_etas,critic_loss,oldies
 
-#function for creating neural network
+#function for creating neural network based on https://keras.io/examples/rl/ddpg_pendulum/
 def nn_init():
     state_input = layers.Input(shape=(num_states))
     out = layers.Dense(16, activation="tanh",use_bias=False,kernel_regularizer='l1_l2')(state_input)
