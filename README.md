@@ -33,7 +33,7 @@ TensorFlow: Large-scale machine learning on heterogeneous systems,
 
 Cell-Free Generation: 
 Making Cell-Free Massive MIMO Competitive With MMSE Processing and Centralized Implementation - Emil Björnson and Luca Sanguinetti, “Making Cell-Free Massive MIMO Competitive With MMSE Processing and Centralized Implementation,” IEEE Transactions on Wireless Communications, vol. 19, no. 1, pp. 77-90, January 2020.<br />
-Github for Making Cell-Free code: https://github.com/emilbjornson/competitive-cell-free <br />
+Github for Making Cell-Free paper: https://github.com/emilbjornson/competitive-cell-free <br />
 
 Keras tutorial: https://keras.io/examples/rl/ddpg_pendulum/ <br />
 
