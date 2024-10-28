@@ -2,7 +2,7 @@ clear all;
 rng(15,"twister") 
 
 %% Define simulation setup
-%% Leverages tools from Emil Björnson and Luca Sanguinetti, “Making Cell-Free Massive MIMO Competitive With MMSE Processing and Centralized Implementation,” IEEE Transactions on Wireless Communications, 
+%% Leverages variables from Emil Björnson and Luca Sanguinetti, “Making Cell-Free Massive MIMO Competitive With MMSE Processing and Centralized Implementation,” IEEE Transactions on Wireless Communications, 
 %% vol. 19, no. 1, pp. 77-90, January 2020.
 %processing capabilities
 B = 20*10^6; %bandwidth
